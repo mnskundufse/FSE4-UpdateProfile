@@ -10,41 +10,53 @@ using Engineer.UpdateProfileService.Model;
 using Engineer.UpdateProfileService.Kafka;
 using System.Threading;
 using Microsoft.AspNetCore.Mvc;
+using Engineer.UpdateProfileService.Business.Implementation;
+using Engineer.UpdateProfileService.Repository.Contracts;
+using Engineer.UpdateProfileService;
+using Engineer.UpdateProfileService.CustomException;
 
 namespace Engineer.updateProfileServiceTest
 {
     public class UpdateProfileBusinessTest
     {
-        readonly Mock<IUpdateProfileBusiness> _mockProfileBusiness = new Mock<IUpdateProfileBusiness>();
-        readonly Mock<IProducerWrapper> _mockProducerWrapper = new Mock<IProducerWrapper>();
-        readonly Mock<ILogger<UpdateProfileController>> _mockLogger = new Mock<ILogger<UpdateProfileController>>();
-        readonly Mock<ProducerConfig> _mockProducerConfig = new Mock<ProducerConfig>();
-
+        readonly Mock<IUpdateProfileRepository> _mockUpdateProfileRepo = new Mock<IUpdateProfileRepository>();
         [Fact]
         public async Task UpdateUserProfile_ValidRequest()
         {
-            //UserProfile request = new UserProfile
-            //{
-            //    AssociateId = "1",
-            //    Name = "manas",
-            //    Mobile = "32314532132"
-            //};
             int userid = 1;
-            UserExpertiseLevel request = new UserExpertiseLevel
+            UserProfile request = new UserProfile
             {
-                NonTechnicalSkillExpertiseLevel = new NonTechnicalSkillExpertiseLevel
-                {
-                    AptitudeExpertiseLevel = "10"
-                },
+                AssociateId = "CTS03",
+                Name = "manas",
+                Mobile = "3231453213",
+                Email = "manas@gmail.com"
+            };
+            UserExpertiseLevel requestUserExpertiseLevel = new UserExpertiseLevel
+            {
                 TechnicalSkillExpertiseLevel = new TechnicalSkillExpertiseLevel
                 {
-                    AngularExpertiseLevel = "3"
+                    AzureExpertiseLevel = "0",
+                    DockerExpertiseLevel = "1",
+                    EntityFrameworkExpertiseLevel = "19",
+                    GitExpertiseLevel = "5",
+                    HTMLCSSJavaScriptExpertiseLevel = "2",
+                    JenkinsExpertiseLevel = "6",
+                    ReactExpertiseLevel = "3",
+                    RestfulExpertiseLevel = "8",
+                    AngularExpertiseLevel = "3",
+                    AspNetCoreExpertiseLevel = "10"
+                },
+                NonTechnicalSkillExpertiseLevel = new NonTechnicalSkillExpertiseLevel
+                {
+                    AptitudeExpertiseLevel = "10",
+                    CommunicationExpertiseLevel = "3",
+                    SpokenExpertiseLevel = "1"
                 }
             };
 
             ApiResponse response = new ApiResponse()
             {
-                Result = 2,
+                Result = "User Profile updated successfully.",
                 Status = new StatusResponse
                 {
                     IsValid = true,
@@ -53,65 +65,108 @@ namespace Engineer.updateProfileServiceTest
                 }
             };
 
-            UpdateProfileController _testObject = new UpdateProfileController(_mockLogger.Object, _mockProducerConfig.Object, _mockProfileBusiness.Object, _mockProducerWrapper.Object);
-            ProducerWrapper _producerTestObject = new ProducerWrapper(_mockProducerConfig.Object);
-            Mock<IProducer<string, string>> _mockProducerBuilder = new Mock<IProducer<string, string>>();
-            _mockProducerWrapper.Setup(x => x.WriteMessage(It.IsAny<string>(), It.IsAny<string>()));
-            _mockProfileBusiness.Setup(x => x.UpdateUserProfileBusiness(It.IsAny<int>(), It.IsAny<UserExpertiseLevel>(), It.IsAny<DateTime>())).Returns(Task.FromResult(response));
-            var result = (ObjectResult)await _testObject.UpdateUserProfile(userid, request);
+            UpdateProfileBusiness _testObject = new UpdateProfileBusiness(_mockUpdateProfileRepo.Object);
+            _mockUpdateProfileRepo.Setup(x => x.UpdateUserProfileRepository(It.IsAny<int>(), It.IsAny<UserExpertiseLevel>(), It.IsAny<DateTime>())).Returns(Task.FromResult(response));
 
-            ApiResponse apiResponse = (ApiResponse)result.Value;
+            var result = await _testObject.UpdateUserProfileBusiness(userid, requestUserExpertiseLevel, DateTime.Now);
 
-            Assert.NotNull(apiResponse.Result);
-            Assert.Equal(2, (int)apiResponse.Result);
-            Assert.NotNull(apiResponse.Status);
-            Assert.True(apiResponse.Status.IsValid);
-            Assert.Equal("SUCCESS", apiResponse.Status.Status);
-            Assert.Empty(apiResponse.Status.Message);
+            Assert.Equal("User Profile updated successfully.", result.Result);
         }
-
         [Fact]
-        public async Task UpdateUserProfile_InvalidRequest()
+        public async Task UpdateUserProfile_nullExpertiseRequest()
         {
             int userid = 1;
-            UserExpertiseLevel request = new UserExpertiseLevel
+            UserProfile request = new UserProfile
             {
-                NonTechnicalSkillExpertiseLevel = new NonTechnicalSkillExpertiseLevel
-                {
-                    AptitudeExpertiseLevel = "10"
-                },
+                AssociateId = "CTS03",
+                Name = "manas",
+                Mobile = "3231453213",
+                Email = "manas@gmail.com"
+            };
+            UserExpertiseLevel requestUserExpertiseLevel = new UserExpertiseLevel
+            {
                 TechnicalSkillExpertiseLevel = new TechnicalSkillExpertiseLevel
                 {
-                    AngularExpertiseLevel = "3"
+
+                },
+                NonTechnicalSkillExpertiseLevel = new NonTechnicalSkillExpertiseLevel
+                {
+                    AptitudeExpertiseLevel = "10",
+                    CommunicationExpertiseLevel = "3",
+                    SpokenExpertiseLevel = "1"
                 }
             };
 
             ApiResponse response = new ApiResponse()
             {
-                Result = 0,
+                Result = "User Profile updated successfully.",
                 Status = new StatusResponse
                 {
-                    IsValid = false,
-                    Status = "FAIL",
+                    IsValid = true,
+                    Status = "SUCCESS",
                     Message = string.Empty
                 }
             };
 
-            UpdateProfileController _testObject = new UpdateProfileController(_mockLogger.Object, _mockProducerConfig.Object, _mockProfileBusiness.Object, _mockProducerWrapper.Object);
-            ProducerWrapper _producerTestObject = new ProducerWrapper(_mockProducerConfig.Object);
-            Mock<IProducer<string, string>> _mockProducerBuilder = new Mock<IProducer<string, string>>();
-            _mockProducerWrapper.Setup(x => x.WriteMessage(It.IsAny<string>(), It.IsAny<string>()));
-            _mockProfileBusiness.Setup(x => x.UpdateUserProfileBusiness(It.IsAny<int>(), It.IsAny<UserExpertiseLevel>(), It.IsAny<DateTime>())).Returns(Task.FromResult(response));
-            var result = (ObjectResult)await _testObject.UpdateUserProfile(userid, request);
+            UpdateProfileBusiness _testObject = new UpdateProfileBusiness(_mockUpdateProfileRepo.Object);
+            _mockUpdateProfileRepo.Setup(x => x.UpdateUserProfileRepository(It.IsAny<int>(), It.IsAny<UserExpertiseLevel>(), It.IsAny<DateTime>())).Returns(Task.FromResult(response));
 
-            ApiResponse apiResponse = (ApiResponse)result.Value;
-
-            Assert.NotNull(apiResponse.Result);
-            Assert.Equal(0, (int)apiResponse.Result);
-            Assert.NotNull(apiResponse.Status);
-            Assert.False(apiResponse.Status.IsValid);
-            Assert.Equal("FAIL", apiResponse.Status.Status);
+            var ex = await Assert.ThrowsAsync<InvalidExpertiseLevelException>(async () => await _testObject.UpdateUserProfileBusiness(userid, requestUserExpertiseLevel, DateTime.Now));
+            Assert.Equal("Invalid Expertise Level <NULL/EMPTY>. Expertise level must not be non empty or a non-numeric value.", ex.Message);
 
         }
+        [Fact]
+        public async Task UpdateUserProfile_wrongNumericRequest()
+        {
+            int userid = 1;
+            UserProfile request = new UserProfile
+            {
+                AssociateId = "CTS03",
+                Name = "manas",
+                Mobile = "3231453213",
+                Email = "manas@gmail.com"
+            };
+            UserExpertiseLevel requestUserExpertiseLevel = new UserExpertiseLevel
+            {
+                TechnicalSkillExpertiseLevel = new TechnicalSkillExpertiseLevel
+                {
+                    AzureExpertiseLevel = "0",
+                    DockerExpertiseLevel = "1",
+                    EntityFrameworkExpertiseLevel = "25",
+                    GitExpertiseLevel = "5",
+                    HTMLCSSJavaScriptExpertiseLevel = "2",
+                    JenkinsExpertiseLevel = "6",
+                    ReactExpertiseLevel = "3",
+                    RestfulExpertiseLevel = "8",
+                    AngularExpertiseLevel = "3",
+                    AspNetCoreExpertiseLevel = "10"
+                },
+                NonTechnicalSkillExpertiseLevel = new NonTechnicalSkillExpertiseLevel
+                {
+                    AptitudeExpertiseLevel = "10",
+                    CommunicationExpertiseLevel = "3",
+                    SpokenExpertiseLevel = "1"
+                }
+            };
+
+            ApiResponse response = new ApiResponse()
+            {
+                Result = "User Profile updated successfully.",
+                Status = new StatusResponse
+                {
+                    IsValid = true,
+                    Status = "SUCCESS",
+                    Message = string.Empty
+                }
+            };
+
+            UpdateProfileBusiness _testObject = new UpdateProfileBusiness(_mockUpdateProfileRepo.Object);
+            _mockUpdateProfileRepo.Setup(x => x.UpdateUserProfileRepository(It.IsAny<int>(), It.IsAny<UserExpertiseLevel>(), It.IsAny<DateTime>())).Returns(Task.FromResult(response));
+
+            var ex = await Assert.ThrowsAsync<InvalidExpertiseLevelException>(async () => await _testObject.UpdateUserProfileBusiness(userid, requestUserExpertiseLevel, DateTime.Now));
+            Assert.Equal("Invalid Expertise Level 25. Expertise level for each skill must range between 0-20.", ex.Message);
+        }
+
+
     }
 }
