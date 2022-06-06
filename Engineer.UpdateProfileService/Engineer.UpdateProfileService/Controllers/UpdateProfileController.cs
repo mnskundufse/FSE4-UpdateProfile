@@ -29,6 +29,12 @@ namespace Engineer.UpdateProfileService.Controllers
             _config = config;
         }
 
+        /// <summary>
+        /// Update User Profile (Controller) 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="userExpertiseLevel"></param>
+        /// <returns></returns>
         [MapToApiVersion("1.0")]
         [Authorize]
         [HttpPost("update-profile/{userId}")]

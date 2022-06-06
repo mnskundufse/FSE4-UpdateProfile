@@ -1,17 +1,16 @@
 ﻿using System;
-using Xunit;
-using Moq;
-using Engineer.UpdateProfileService.Business.Contracts;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Confluent.Kafka;
+using Engineer.UpdateProfileService.Business.Contracts;
 using Engineer.UpdateProfileService.Controllers;
-using Engineer.UpdateProfileService.Model;
 using Engineer.UpdateProfileService.Kafka;
-using System.Threading;
+using Engineer.UpdateProfileService.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
 
-namespace Engineer.updateProfileServiceTest
+namespace Engineer.UpdateProfileServiceTest
 {
     public class UpdateProfileControllerTest
     {
@@ -23,12 +22,6 @@ namespace Engineer.updateProfileServiceTest
         [Fact]
         public async Task UpdateUserProfile_ValidRequest()
         {
-            //UserProfile request = new UserProfile
-            //{
-            //    AssociateId = "1",
-            //    Name = "manas",
-            //    Mobile = "32314532132"
-            //};
             int userid = 1;
             UserExpertiseLevel request = new UserExpertiseLevel
             {

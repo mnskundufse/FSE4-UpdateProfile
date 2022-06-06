@@ -1,21 +1,13 @@
 ﻿using System;
-using Xunit;
-using Moq;
-using Engineer.UpdateProfileService.Business.Contracts;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using Confluent.Kafka;
-using Engineer.UpdateProfileService.Controllers;
-using Engineer.UpdateProfileService.Model;
-using Engineer.UpdateProfileService.Kafka;
-using System.Threading;
-using Microsoft.AspNetCore.Mvc;
 using Engineer.UpdateProfileService.Business.Implementation;
-using Engineer.UpdateProfileService.Repository.Contracts;
-using Engineer.UpdateProfileService;
 using Engineer.UpdateProfileService.CustomException;
+using Engineer.UpdateProfileService.Model;
+using Engineer.UpdateProfileService.Repository.Contracts;
+using Moq;
+using Xunit;
 
-namespace Engineer.updateProfileServiceTest
+namespace Engineer.UpdateProfileServiceTest
 {
     public class UpdateProfileBusinessTest
     {
@@ -166,7 +158,5 @@ namespace Engineer.updateProfileServiceTest
             var ex = await Assert.ThrowsAsync<InvalidExpertiseLevelException>(async () => await _testObject.UpdateUserProfileBusiness(userid, requestUserExpertiseLevel, DateTime.Now));
             Assert.Equal("Invalid Expertise Level 25. Expertise level for each skill must range between 0-20.", ex.Message);
         }
-
-
     }
 }
