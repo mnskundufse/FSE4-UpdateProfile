@@ -15,6 +15,13 @@ namespace Engineer.UpdateProfileService.Repository.Implementation
             _context = context;
         }
 
+        /// <summary>
+        /// Update User Profile (Repository)
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="userExpertiseLevel"></param>
+        /// <param name="updatedDateTime"></param>
+        /// <returns></returns>
         public async Task<ApiResponse> UpdateUserProfileRepository(int userId, UserExpertiseLevel userExpertiseLevel, DateTime updatedDateTime)
         {
             ApiResponse response = new ApiResponse();
@@ -29,6 +36,7 @@ namespace Engineer.UpdateProfileService.Repository.Implementation
             {
                 if ((DateTime.Now - userItem.UpdatedDate).Days <= 10)
                 {
+                    //Update of Profile must be allowed only after 10 days of adding profile or last change, else throw a custom exception
                     throw new UpdateProfileAfterValidDateException();
                 }
                 else
@@ -54,6 +62,7 @@ namespace Engineer.UpdateProfileService.Repository.Implementation
             }
             else
             {
+                //If invalid UserId is provided, it must throw a custom exception
                 throw new InvalidUserIdException();
             }
 

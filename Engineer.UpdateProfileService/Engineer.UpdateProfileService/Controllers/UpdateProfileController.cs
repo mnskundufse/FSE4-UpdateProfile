@@ -29,6 +29,12 @@ namespace Engineer.UpdateProfileService.Controllers
             _config = config;
         }
 
+        /// <summary>
+        /// Update User Profile (Controller) 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="userExpertiseLevel"></param>
+        /// <returns></returns>
         [MapToApiVersion("1.0")]
         [Authorize]
         [HttpPost("update-profile/{userId}")]
@@ -45,7 +51,8 @@ namespace Engineer.UpdateProfileService.Controllers
                     {
                         UserId = userId,
                         TechnicalSkillExpertiseLevel = userExpertiseLevel.TechnicalSkillExpertiseLevel,
-                        NonTechnicalSkillExpertiseLevel = userExpertiseLevel.NonTechnicalSkillExpertiseLevel
+                        NonTechnicalSkillExpertiseLevel = userExpertiseLevel.NonTechnicalSkillExpertiseLevel,
+                        UpdatedDate = updatedDateTime
                     };
                     PublishEvent(userProfile);
                     _logger.LogInformation("{date} : UpdateUserProfile of the UpdateProfileController executed.", DateTime.UtcNow);
