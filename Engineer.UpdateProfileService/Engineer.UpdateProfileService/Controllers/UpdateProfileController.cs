@@ -51,7 +51,8 @@ namespace Engineer.UpdateProfileService.Controllers
                     {
                         UserId = userId,
                         TechnicalSkillExpertiseLevel = userExpertiseLevel.TechnicalSkillExpertiseLevel,
-                        NonTechnicalSkillExpertiseLevel = userExpertiseLevel.NonTechnicalSkillExpertiseLevel
+                        NonTechnicalSkillExpertiseLevel = userExpertiseLevel.NonTechnicalSkillExpertiseLevel,
+                        UpdatedDate = updatedDateTime
                     };
                     PublishEvent(userProfile);
                     _logger.LogInformation("{date} : UpdateUserProfile of the UpdateProfileController executed.", DateTime.UtcNow);
